@@ -97,7 +97,7 @@ namespace :deploy do
     desc "Make symlink for database yaml"
     task :symlink do
       on roles(:all) do |host|
-        execute :ln, "-nfs", "#{shared_path}/config/database.yml", "#{latest_release}/config/database.yml"
+        execute :ln, "-nfs", "#{shared_path}/config/database.yml", "#{release_path}/config/database.yml"
       end
     end
   end
