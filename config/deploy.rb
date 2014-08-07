@@ -4,6 +4,8 @@ lock '3.2.1'
 set :application, 'rails-devise-pundit'
 set :repo_url, 'https://github.com/noahgibbs/rails-devise-pundit.git'
 
+set :rails_env, 'production'
+
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
@@ -55,4 +57,50 @@ namespace :deploy do
     end
   end
 
+  namespace :db do
+    desc "Create database yaml in shared path"
+    task :configure do
+      #set :database_username, 'root'
+      #set :database_password do
+      #  Capistrano::CLI.password_prompt "Database Password: "
+      #end
+
+      db_config = <<-EOF
+        base: &base
+          adapter: mysql2
+          encoding: utf8
+          reconnect: false
+          pool: 5
+          username: root
+          #password:
+
+        development:
+          database: #{fetch(:application)}_development
+          <<: *base
+
+        test:
+          database: #{fetch(:application)}_test
+          <<: *base
+
+        production:
+          database: #{fetch(:application)}_production
+          <<: *base
+      EOF
+      db_config_io = StringIO.new(db_config)
+
+      on roles(:all) do |host|
+        execute :mkdir, "-p", "#{shared_path}/config"
+        upload! db_config_io, "#{shared_path}/config/database.yml"
+      end
+    end
+
+    desc "Make symlink for database yaml"
+    task :symlink do
+      on roles(:all) do |host|
+        execute :ln, "-nfs", "#{shared_path}/config/database.yml", "#{latest_release}/config/database.yml"
+      end
+    end
+  end
+  before "deploy:starting", "db:configure"
+  before "deploy:updated", "db:symlink"
 end
