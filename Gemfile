@@ -24,10 +24,6 @@ end
 group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'
-  gem 'capistrano', '3.2.1'
-  gem 'capistrano-bundler', '1.1.2'
-  gem 'capistrano-rails', '1.1.1'
-  gem 'capistrano-rvm', '0.1.1'
 end
 group :test do
   gem 'capybara'
@@ -36,3 +32,8 @@ group :test do
   gem 'launchy'
   gem 'selenium-webdriver'
 end
+
+gem 'capistrano', '3.2.1'
+gem 'capistrano-bundler', '1.1.2'
+gem 'capistrano-rails', '1.1.1'
+gem 'capistrano-rvm', '0.1.1'
